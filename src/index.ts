@@ -1,17 +1,22 @@
 import fp from "fastify-plugin";
-import type {} from "fastify";
-
+import { getSourceIPs, isTrustProxy } from "#func";
+import { onRequest } from "#hook";
+import { ipSymbol, proxyHeadersSymbol } from "#symbol";
 
 export type TemplatePluginOptions = {
-  value: string;
+  headers: string[];
 };
 
-export const name = "@jafps/plugin-template";
+export const name = "@jafps/plugin-ip";
 
 export default fp<TemplatePluginOptions>(
   async (app, opts) => {
-    const { value } = opts;
-    app.decorate("hello", () => value);
+    const { headers } = opts;
+    app.decorate(proxyHeadersSymbol, headers);
+    app.decorate("isTrustProxy", isTrustProxy);
+    app.decorateRequest(ipSymbol, null);
+    app.decorateRequest("getSourceIPs", getSourceIPs);
+    app.addHook("onRequest", onRequest);
   },
   {
     decorators: {},
@@ -21,8 +26,15 @@ export default fp<TemplatePluginOptions>(
   }
 );
 
+/* node:coverage disable */
 declare module "fastify" {
   interface FastifyInstance {
-    readonly hello: () => string;
+    isTrustProxy: OmitThisParameter<typeof isTrustProxy>;
+    [proxyHeadersSymbol]: string[];
+  }
+
+  interface FastifyRequest {
+    getSourceIPs: OmitThisParameter<typeof getSourceIPs>;
+    [ipSymbol]: string[] | null;
   }
 }

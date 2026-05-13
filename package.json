@@ -1,26 +1,36 @@
 {
-  "name": "@jafps/plugin-template",
+  "name": "@jafps/plugin-ip",
   "version": "1.0.0",
-  "description": "",
+  "description": "Fastify plugin for updating ip via headers",
   "type": "module",
-  "private": true,
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc",
     "test": "node --enable-source-maps --experimental-test-coverage --test-coverage-exclude \"src/**/__tests__/*.ts\" --test \"./dist/**/__tests__/*.{spec,test}.js\"",
-    "lint": "eslint"
+    "lint": "eslint",
+    "start": "node index.js"
   },
   "author": "Joshua Avalon",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jafpsjs/plugin-template.git"
+    "url": "git+https://github.com/jafpsjs/plugin-ip.git"
   },
   "bugs": {
-    "url": "https://github.com/jafpsjs/plugin-template/issues"
+    "url": "https://github.com/jafpsjs/plugin-ip/issues"
   },
-  "homepage": "https://github.com/jafpsjs/plugin-template#readme",
-  "imports": {},
+  "homepage": "https://github.com/jafpsjs/plugin-ip#readme",
+  "imports": {
+    "#func": {
+      "import": "./dist/func/index.js"
+    },
+    "#hook": {
+      "import": "./dist/hook/index.js"
+    },
+    "#symbol": {
+      "import": "./dist/symbol.js"
+    }
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js"

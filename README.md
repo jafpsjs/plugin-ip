@@ -1,3 +1,3 @@
-# @jafps/plugin-template
+# @jafps/plugin-ip
 
-Template repository for Fastify Plugin.
+Fastify plugin for updating ip via headers.
