@@ -7,8 +7,7 @@
     "prebuild": "rimraf dist",
     "build": "tsc",
     "test": "node --enable-source-maps --experimental-test-coverage --test-coverage-exclude \"src/**/__tests__/*.ts\" --test \"./dist/**/__tests__/*.{spec,test}.js\"",
-    "lint": "eslint",
-    "start": "node index.js"
+    "lint": "eslint"
   },
   "author": "Joshua Avalon",
   "license": "Apache-2.0",
@@ -29,6 +28,9 @@
     },
     "#symbol": {
       "import": "./dist/symbol.js"
+    },
+    "#type": {
+      "import": "./dist/type.js"
     }
   },
   "exports": {
@@ -56,6 +58,7 @@
     "typescript-eslint": "^8.59.3"
   },
   "dependencies": {
+    "@fastify/proxy-addr": "^5.1.0",
     "fastify-plugin": "^5.1.0"
   }
 }

@@ -1,22 +1,34 @@
 import fp from "fastify-plugin";
-import { getSourceIPs, isTrustProxy } from "#func";
+import { getSourceIPs } from "#func";
 import { onRequest } from "#hook";
-import { ipSymbol, proxyHeadersSymbol } from "#symbol";
+import { ipSymbol, optionsSymbol, proxyHeadersSymbol } from "#symbol";
+import type {
+  FastifyBaseLogger,
+  FastifyServerOptions,
+  FastifyTypeProvider,
+  FastifyTypeProviderDefault,
+  RawReplyDefaultExpression,
+  RawRequestDefaultExpression,
+  RawServerBase,
+  RawServerDefault
+} from "fastify";
 
-export type TemplatePluginOptions = {
+export type IpPluginOptions = {
   headers: string[];
 };
 
 export const name = "@jafps/plugin-ip";
 
-export default fp<TemplatePluginOptions>(
+export default fp<IpPluginOptions>(
   async (app, opts) => {
     const { headers } = opts;
+    const { trustProxy = false } = app[optionsSymbol];
     app.decorate(proxyHeadersSymbol, headers);
-    app.decorate("isTrustProxy", isTrustProxy);
     app.decorateRequest(ipSymbol, null);
     app.decorateRequest("getSourceIPs", getSourceIPs);
-    app.addHook("onRequest", onRequest);
+    if (trustProxy) {
+      app.addHook("onRequest", onRequest);
+    }
   },
   {
     decorators: {},
@@ -27,9 +39,18 @@ export default fp<TemplatePluginOptions>(
 );
 
 /* node:coverage disable */
+type ServerOptions<RawServer extends RawServerBase, Logger extends FastifyBaseLogger> = FastifyServerOptions<RawServer, Logger>;
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 declare module "fastify" {
-  interface FastifyInstance {
-    isTrustProxy: OmitThisParameter<typeof isTrustProxy>;
+  interface FastifyInstance<
+    RawServer extends RawServerBase = RawServerDefault,
+    RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+    RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+    Logger extends FastifyBaseLogger = FastifyBaseLogger,
+    TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+  > {
+    [optionsSymbol]: ServerOptions<RawServer, Logger>;
     [proxyHeadersSymbol]: string[];
   }
 

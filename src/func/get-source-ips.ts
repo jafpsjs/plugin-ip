@@ -1,5 +1,6 @@
 import { isIP } from "node:net";
-import { ipSymbol, proxyHeadersSymbol } from "#symbol";
+import { ipSymbol, optionsSymbol, proxyHeadersSymbol } from "#symbol";
+import { getTrustProxyFn } from "./get-trust-proxy-fn.js";
 import type { FastifyRequest } from "fastify";
 
 function parseIPHeaderString(value: string): string[] {
@@ -20,15 +21,22 @@ export function getSourceIPs(this: FastifyRequest): string[] {
   if (this[ipSymbol] && this[ipSymbol].length > 0) {
     return this[ipSymbol];
   }
+  const { trustProxy = false } = this.server[optionsSymbol];
   const sourceAddr = this.raw.socket.remoteAddress ?? "127.0.0.1";
-  if (!this.server.isTrustProxy()) {
-    return [sourceAddr];
-  }
+  const proxyFn = getTrustProxyFn(trustProxy);
   const ipAddrs = [sourceAddr];
+
   for (const header of this.server[proxyHeadersSymbol]) {
     const ips = parseIPHeaders(this.headers[header]);
     if (ips.length > 0) {
       ipAddrs.push(...ips);
+      for (const [i, ip] of ipAddrs.entries()) {
+        if (proxyFn(ip, i)) {
+          continue;
+        }
+        ipAddrs.length = i + 1;
+        break;
+      }
       break;
     }
   }

@@ -1,9 +1,6 @@
 import type { onRequestHookHandler } from "fastify";
 
 export const onRequest: onRequestHookHandler = async function (this, req) {
-  if (!this.isTrustProxy()) {
-    return;
-  }
   Object.defineProperty(req, "ip", {
     get() {
       const addrs = req.getSourceIPs();
