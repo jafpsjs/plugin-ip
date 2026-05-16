@@ -1,7 +1,7 @@
 {
   "name": "@jafps/plugin-ip",
   "version": "1.0.0",
-  "description": "Fastify plugin for updating ip via headers",
+  "description": "Fastify plugin for determining the address of a proxied request.",
   "type": "module",
   "scripts": {
     "prebuild": "rimraf dist",
