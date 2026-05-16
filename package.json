@@ -1,6 +1,6 @@
 {
   "name": "@jafps/plugin-ip",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Fastify plugin for determining the address of a proxied request.",
   "type": "module",
   "scripts": {
